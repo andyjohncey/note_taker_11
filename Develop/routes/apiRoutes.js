@@ -4,28 +4,31 @@
 // These data sources hold arrays of information on table-data, waitinglist, etc.
 // ===============================================================================
 
-var tableData = require("../data/tableData");
-var waitListData = require("../data/waitinglistData");
+const router = require("express").Router();
+const store = require("../db/store");
+
+// const notesData = require("../data/notesData");
 
 
 // ===============================================================================
 // ROUTING
 // ===============================================================================
 
-module.exports = function(app) {
+
   // API GET Requests
   // Below code handles when users "visit" a page.
   // In each of the below cases when a user visits a link
   // (ex: localhost:PORT/api/admin... they are shown a JSON of the data in the table)
   // ---------------------------------------------------------------------------
 
-  app.get("/api/tables", function(req, res) {
-    res.json(tableData);
+  router.get("/notes", function(req, res) {
+    store
+      .getNotes()
+      .then(notes => res.json(notes))
+      .catch(err => res.status(500).json(err));
   });
 
-  app.get("/api/waitlist", function(req, res) {
-    res.json(waitListData);
-  });
+  
 
   // API POST Requests
   // Below code handles when a user submits a form and thus submits data to the server.
@@ -35,29 +38,39 @@ module.exports = function(app) {
   // Then the server saves the data to the tableData array)
   // ---------------------------------------------------------------------------
 
-  app.post("/api/tables", function(req, res) {
+  router.post("/notes", (req, res) =>  {
+    store
+    .addNote(req.body)
+    .then((note) => res.json(note))
+    .catch(err => res.status(500).json(err));
+});
     // Note the code here. Our "server" will respond to requests and let users know if they have a table or not.
     // It will do this by sending out the value "true" have a table
     // req.body is available since we're using the body parsing middleware
-    if (tableData.length < 5) {
-      tableData.push(req.body);
-      res.json(true);
-    }
-    else {
-      waitListData.push(req.body);
-      res.json(false);
-    }
-  });
+   
+
+
+    // const newNote = req.body;
+
+    // console.log(newNote);
+
+    //   notes.push(newNote);
+
+    //   res.json(newNote);
+    // });
 
   // ---------------------------------------------------------------------------
   // I added this below code so you could clear out the table while working with the functionality.
   // Don"t worry about it!
 
-  app.post("/api/clear", function(req, res) {
-    // Empty out the arrays of data
-    tableData.length = 0;
-    waitListData.length = 0;
+  router.delete("/notes/:id", function(req, res) {
+    store
+      .removeNote(req.params.id)
+      .then(() => res.json({ ok: true }))
+      .catch(err => res.status(500).json(err));
+    });
 
-    res.json({ ok: true });
-  });
-};
+
+ 
+module.exports = router;
+
