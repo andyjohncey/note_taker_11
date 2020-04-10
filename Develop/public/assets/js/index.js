@@ -109,7 +109,7 @@ const renderNoteList = function(notes) {
 
   const noteListItems = [];
 
-  for (const notes of notes) {
+  for (const note of notes) {
     const $li = $("<li class='list-group-item'>").data(note);
     const $span = $("<span>").text(note.title);
     const $delBtn = $(
