@@ -10,13 +10,12 @@ const shortid = require("shortid");
 // create an express server
 const app = express();
 
-const dbFilePath = path.resolve(__dirname, '.', 'db', 'db.JSON');
+const dbFilePath = path.resolve(__dirname, '.', 'db', 'db.json');
 
 app.use(express.static("public"));
 
 // set up the Express app to handle data parsing
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true })); 
 
@@ -37,8 +36,6 @@ app.get('/notes', (_, res) => {
 });
 
 app.get('/api/notes', async (_, res) => {
-    const fileData = await fs.readFile(dbFilePath, "utf-8");
-    const data = JSON.parse(fileData);
     res.json(data);
 
 });
@@ -47,28 +44,28 @@ app.get('/api/notes', async (_, res) => {
 app.post('/api/notes', async (req, res) => {
     const { title, text } = req.body;
         
-    const fileData = await fs.readFile(dbFilePath, "utf-8");
-    const data = JSON.parse(fileData);
-
-    fileData.push({ 
+    data.push({ 
         id: shortid.generate(),
         title,
         text
-
     });
 
     await fs.writeFile(dbFilePath, JSON.stringify(data))
 
-    res.json({ success: true });
-
+    res.json({ success: true }); 
 });
 
 app.delete('/api/notes', async (_, res) => {
-    const fileData = await fs.readFile(dbFilePath, "utf-8");
-    const data = JSON.parse(fileData);
-    res.json(data);
-
+    const noteId = req.params.id;
+   
+    data = data.filter(note => note.id === note.id);
+    await fs.writeFile(dbFilePath, JSON.stringify(data))
+     
+    
+    res.json({ success: true }); 
 });
+
+
 
 app.use('*', (_, res) => {
         res.redirect('/');
@@ -83,5 +80,7 @@ app.use('*', (_, res) => {
 
 // Listener
 app.listen(PORT, async () => {
+    const fileData = await fs.readFile(dbFilePath, "utf-8");
+    data = JSON.parse(fileData)
     console.log(`App listening on PORT: + ${PORT}`);
 });
