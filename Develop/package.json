@@ -4,14 +4,16 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node-dev server/index.js"
+    "start": "node-dev index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.0",
     "express": "^4.16.4",
     "mysql": "^2.16.0",
-    "node-dev": "^4.0.0"
+    "node-dev": "^4.0.0",
+    "shortid": "^2.2.15"
   },
   "description": ""
 }
